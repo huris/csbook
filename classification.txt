@@ -1,0 +1,15 @@
+web-development
+programming
+datebases
+graphics-design
+operating-systems
+networking-cloud-computing
+administration
+certification
+computers-technology
+enterprise
+game-programming
+hardware
+marketing-seo
+security
+software
