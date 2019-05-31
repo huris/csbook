@@ -110,8 +110,9 @@ if __name__ == '__main__':
         new_url = base_url + classification + '/page/{}'
         req = requests.get(new_url.format(1), headers=get_headers()).text
         pagenum = re.search('<span class="pages">1 / (.*) Pages</span>', req).group()[24:-13]
+        # print(pagenum)
         for i in range(int(pagenum)):
-            req = requests.get(new_url.format(1), headers=get_headers()).text
+            req = requests.get(new_url.format(i+1), headers=get_headers()).text
             book_link = re.findall(book_link_pattern, req)
             book_link = list(set(book_link))
             for url in book_link:
@@ -129,18 +130,20 @@ if __name__ == '__main__':
                         re.findall("<dt>Category:</dt><dd> <a href=\".*\" rel=\"category\" >(.*)</a></dd>", req)[0]
                     dic['language'] = re.findall("<dt>Language:</dt><dd> (.*)</dd>", req)[0]
                     dic['picture'] = re.findall("<img width=\".*\" height=\".*\" src=\"(.*?)\"", req)[0]
-                    str = \
-                        re.findall("<div class=\"entry-content\">(.*)<!-- END \.entry-content -->", req,
-                                   flags=re.DOTALL)[
-                            0]
-                    str = re.sub(r" +", " ", str)
-                    str = re.sub(r"<[hp]\d?>", "", str)
-                    str = re.sub(r"</[hp]\d?>", "", str)
-                    str = re.sub(r"&#\d{4};", " ", str)
-                    str = re.sub(r"</div>", "", str)
-                    str = re.sub(r"</*ul>", "", str)
-                    str = re.sub(r"</*li>", "", str)
-                    dic['description'] = str
+                    strtmp = re.findall("<div class=\"entry-content\">(.*)<!-- END \.entry-content -->", req, flags=re.DOTALL)[0]
+                    strtmp = re.sub(r" +", " ", strtmp)
+                    strtmp = re.sub(r"<[hp]\d?>", "", strtmp)
+                    strtmp = re.sub(r"</[hp]\d?>", "", strtmp)
+                    strtmp = re.sub(r"&#\d{4};", " ", strtmp)
+                    strtmp = re.sub(r"</*div>", "", strtmp)
+                    strtmp = re.sub(r"</*ul>", "", strtmp)
+                    strtmp = re.sub(r"</*li>", "", strtmp)
+                    patterns = [
+                        r'Book Description:',
+                        r'\s\s+',
+                    ]
+                    strtmp = re.sub('|'.join(patterns), '', strtmp)
+                    dic['description'] = strtmp
                     try:
                         dic['download_link_pdf'] = re.search(down_link_pattern, req).group()[6:-18]
                         dic['download_link_epub'] = re.search(down_link_pattern1, req).group()[6:-18]
@@ -166,3 +169,4 @@ if __name__ == '__main__':
                 except:
                     print(req)
         f.close()
+
