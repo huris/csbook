@@ -72,7 +72,7 @@ def get_headers():
 
 
 if __name__ == '__main__':
-    fenlei = [
+    classifications = [
         'web-development',
         'programming',
         'datebases',
@@ -104,7 +104,7 @@ if __name__ == '__main__':
         'price'
     ]
 
-    for classification in fenlei:
+    for classification in classifications:
         print(classification)
         f = open(classification + '.json', 'a')
         new_url = base_url + classification + '/page/{}'
@@ -112,7 +112,7 @@ if __name__ == '__main__':
         pagenum = re.search('<span class="pages">1 / (.*) Pages</span>', req).group()[24:-13]
         # print(pagenum)
         for i in range(int(pagenum)):
-            req = requests.get(new_url.format(i+1), headers=get_headers()).text
+            req = requests.get(new_url.format(i + 1), headers=get_headers()).text
             book_link = re.findall(book_link_pattern, req)
             book_link = list(set(book_link))
             for url in book_link:
@@ -130,7 +130,9 @@ if __name__ == '__main__':
                         re.findall("<dt>Category:</dt><dd> <a href=\".*\" rel=\"category\" >(.*)</a></dd>", req)[0]
                     dic['language'] = re.findall("<dt>Language:</dt><dd> (.*)</dd>", req)[0]
                     dic['picture'] = re.findall("<img width=\".*\" height=\".*\" src=\"(.*?)\"", req)[0]
-                    strtmp = re.findall("<div class=\"entry-content\">(.*)<!-- END \.entry-content -->", req, flags=re.DOTALL)[0]
+                    strtmp = \
+                        re.findall("<div class=\"entry-content\">(.*)<!-- END \.entry-content -->", req,
+                                   flags=re.DOTALL)[0]
                     strtmp = re.sub(r" +", " ", strtmp)
                     strtmp = re.sub(r"<[hp]\d?>", "", strtmp)
                     strtmp = re.sub(r"</[hp]\d?>", "", strtmp)
@@ -160,13 +162,9 @@ if __name__ == '__main__':
                                 dic['download_link_epub'] = None
                                 pass
                     dic['price'] = random.randint(30, 200)
-                    # dicarray.append(dic)
                     f.write(json.dumps(dic))
                     f.write(',')
                     f.write('\n')
-                    # print(now)
-                    # now += 1
                 except:
                     print(req)
         f.close()
-
